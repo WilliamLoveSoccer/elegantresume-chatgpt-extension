@@ -61,11 +61,10 @@ function ChatGPTQuery(props: Props) {
     }
   }, [error])
 
-  if (isSendingRequest)
-    return <p className="text-[#b6b8ba] animate-pulse">Waiting for ChatGPT response...</p>
+  if (isSendingRequest) return <p className="">Waiting for ChatGPT response...</p>
   if (answer) {
     return (
-      <div className="markdown-body gpt-markdown" id="gpt-answer" dir="auto">
+      <div className="" id="gpt-answer" dir="auto">
         <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
           {answer.text}
         </ReactMarkdown>
@@ -112,11 +111,7 @@ function ChatGPTQuery(props: Props) {
     )
   }
 
-  return (
-    <p className="text-[#b6b8ba] animate-pulse">
-      Welcome! Please select a resume section and get started!
-    </p>
-  )
+  return <p className="">Welcome! Please select a resume section and get started!</p>
 }
 
 export default memo(ChatGPTQuery)

@@ -18,10 +18,6 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
   "content_scripts": [
     {
       "matches": ["http://localhost:3001/app/builder*"],

@@ -22,44 +22,17 @@ async function mount() {
     container.classList.add('gpt-light')
   }
 
-  const siderbarContainer = document.getElementById('chatGPT-anwser')
+  const siderbarContainer = document.getElementById('ChatGPT-Response-Container')
   siderbarContainer?.appendChild(container)
-  // const siderbarContainer = getPossibleElementByQuerySelector(siteConfig.sidebarContainerQuery)
-  // if (siderbarContainer) {
-  //   siderbarContainer.prepend(container)
-  // } else {
-  //   container.classList.add('sidebar-free')
-  //   const appendContainer = getPossibleElementByQuerySelector(siteConfig.appendContainerQuery)
-  //   if (appendContainer) {
-  //     appendContainer.appendChild(container)
-  //   }
-  // }
 
-  render(
-    <ChatGPTContainer question={'123'} triggerMode={userConfig.triggerMode || 'always'} />,
-    container,
-  )
+  const warningMessage = document.getElementById('ChatGPT-Extension-Not-Available-Warning')
+  if (warningMessage) warningMessage.style.display = 'none'
+
+  render(<ChatGPTContainer />, container)
 }
 
-// const siteRegex = new RegExp(Object.keys(config).join('|'))
-// const siteName = location.hostname.match(siteRegex)![0]
-// const siteConfig = config[siteName]
-
 async function run() {
-  // const searchInput = getPossibleElementByQuerySelector<HTMLInputElement>(siteConfig.inputQuery)
-  // if (searchInput && searchInput.value) {
-  //   console.debug('Mount ChatGPT on', siteName)
-  //   const userConfig = await getUserConfig()
-  //   const searchValueWithLanguageOption =
-  //     userConfig.language === Language.Auto
-  //       ? searchInput.value
-  //       : `${searchInput.value}(in ${userConfig.language})`
-  //     }
   mount()
 }
 
 run()
-
-// if (siteConfig.watchRouteChange) {
-//   siteConfig.watchRouteChange(run)
-// }
