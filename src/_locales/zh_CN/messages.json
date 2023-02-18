@@ -1,8 +1,8 @@
 {
   "appName": {
-    "message": "ChatGPT for Google"
+    "message": "ChatGPT for ElegantResume"
   },
   "appDesc": {
-    "message": "在搜索引擎结果中同时显示ChatGPT的回答"
+    "message": "用ChatGPT的改简历"
   }
 }
