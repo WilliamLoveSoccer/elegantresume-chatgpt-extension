@@ -29,6 +29,7 @@ function ChatGPTQuery(props: Props) {
         setAnswer(msg)
       } else if (msg.error) {
         setError(msg.error)
+        props.onAnswerGenerated()
       } else if (msg.event === 'DONE') {
         props.onAnswerGenerated()
       }
