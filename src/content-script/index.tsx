@@ -39,6 +39,7 @@ async function run() {
   mount()
 }
 
+//will get the message when 'AiAssistant' component get mounted.
 window.addEventListener(
   'message',
   (event) => {
@@ -54,4 +55,4 @@ window.addEventListener(
   },
   false,
 )
-run()
+run() //ensure the the content is mounted when user refreshes in /app/builder
