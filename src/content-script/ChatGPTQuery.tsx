@@ -4,7 +4,6 @@ import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import Browser from 'webextension-polyfill'
 import { Answer } from '../messaging'
-import { isBraveBrowser } from './utils.js'
 
 export type QueryStatus = 'success' | 'error' | undefined
 
@@ -18,25 +17,31 @@ function ChatGPTQuery(props: Props) {
   const [answer, setAnswer] = useState<Answer | null>(null)
   const [error, setError] = useState('')
   const [retry, setRetry] = useState(0)
-  const [isSendingRequest, setIsSendingRequest] = useState<boolean | null>(null)
+  const [isGettingAnswer, setIsGettingAnswer] = useState<boolean | null>(false)
+  const [isGettingFirstResp, setIsGettingFirstResp] = useState<boolean | null>(null)
+  const [port, setPort] = useState<Browser.Runtime.Port>()
 
   useEffect(() => {
     const port = Browser.runtime.connect()
-
+    setPort(port)
     const listener = (msg: any) => {
-      setIsSendingRequest(false)
+      setIsGettingFirstResp(false)
       if (msg.text) {
         setAnswer(msg)
       } else if (msg.error) {
         setError(msg.error)
         props.onAnswerGenerated()
+        setIsGettingAnswer(false)
       } else if (msg.event === 'DONE') {
         props.onAnswerGenerated()
+        setIsGettingAnswer(false)
       }
     }
     if (props.prompt.length !== 0 && port) {
-      setIsSendingRequest(true)
-
+      setIsGettingFirstResp(true)
+      setIsGettingAnswer(true)
+      setError('')
+      setAnswer(null)
       port.postMessage({ question: props.prompt })
 
       port.onMessage.addListener(listener)
@@ -62,57 +67,53 @@ function ChatGPTQuery(props: Props) {
     }
   }, [error])
 
-  if (isSendingRequest) return <p className="">Waiting for ChatGPT response...</p>
-  if (answer) {
-    return (
-      <div className="" id="gpt-answer" dir="auto">
-        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
-          {answer.text}
-        </ReactMarkdown>
+  const onStopGenerating = () => {
+    if (port && isGettingAnswer) {
+      port.disconnect()
+      props.onAnswerGenerated()
+      setIsGettingAnswer(false)
+      setIsGettingFirstResp(false)
+    }
+  }
+
+  return (
+    <>
+      <div className="mb-3">
+        <button className="px-3 py-2 rounded border border-gray-400" onClick={onStopGenerating}>
+          {isGettingAnswer ? <span>Stop Generating</span> : <span>Stopped</span>}
+        </button>
       </div>
-    )
-  }
-
-  if (error === 'UNAUTHORIZED' || error === 'CLOUDFLARE') {
-    return (
-      <p>
-        Please login and pass Cloudflare check at{' '}
-        <a href="https://chat.openai.com" target="_blank" rel="noreferrer">
-          chat.openai.com
-        </a>
-        {retry > 0 &&
-          (() => {
-            if (isBraveBrowser()) {
-              return (
-                <span className="block mt-2">
-                  Still not working? Follow{' '}
-                  <a href="https://github.com/wong2/chat-gpt-google-extension#troubleshooting">
-                    Brave Troubleshooting
-                  </a>
-                </span>
-              )
-            } else {
-              return (
-                <span className="italic block mt-2 text-xs">
-                  OpenAI requires passing a security check every once in a while. If this keeps
-                  happening, change AI provider to OpenAI API in the extension options.
-                </span>
-              )
-            }
-          })()}
-      </p>
-    )
-  }
-  if (error) {
-    return (
-      <p>
-        Failed to load response from ChatGPT:
-        <span className="break-all block">{error}</span>
-      </p>
-    )
-  }
-
-  return <p className="">Welcome! Please select a resume section and get started!</p>
+      <div className="border border-gray-400 rounded p-3 text-lg">
+        {!isGettingAnswer && !answer && !error && (
+          <p className="">Welcome! Please select a resume section and get started!</p>
+        )}
+        {isGettingFirstResp && <p className="">Waiting for ChatGPT response...</p>}
+        {answer && (
+          <div className="" id="gpt-answer" dir="auto">
+            <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
+              {answer.text}
+            </ReactMarkdown>
+          </div>
+        )}
+        {(error === 'UNAUTHORIZED' || error === 'CLOUDFLARE') && (
+          <p>
+            Please login and pass Cloudflare check at{' '}
+            <a href="https://chat.openai.com" target="_blank" rel="noreferrer">
+              chat.openai.com
+            </a>
+          </p>
+        )}
+        {error && ((error !== 'UNAUTHORIZED' && error !== 'CLOUDFLARE') || retry > 0) && (
+          <>
+            <p>Failed to load response from ChatGPT:</p>
+            <p>{error}</p>
+            <p>Please refresh your browser and try again.</p>
+            <p>It the error still exists, please log out your ChatGPT account and try again.</p>
+          </>
+        )}
+      </div>
+    </>
+  )
 }
 
 export default memo(ChatGPTQuery)

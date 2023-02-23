@@ -1,5 +1,3 @@
-import Browser from 'webextension-polyfill'
-
 export function getPossibleElementByQuerySelector<T extends Element>(
   queryArray: string[],
 ): T | undefined {
@@ -22,13 +20,4 @@ export function endsWithQuestionMark(question: string) {
 
 export function isBraveBrowser() {
   return (navigator as any).brave?.isBrave()
-}
-
-export async function shouldShowRatingTip() {
-  const { ratingTipShowTimes = 0 } = await Browser.storage.local.get('ratingTipShowTimes')
-  if (ratingTipShowTimes >= 5) {
-    return false
-  }
-  await Browser.storage.local.set({ ratingTipShowTimes: ratingTipShowTimes + 1 })
-  return ratingTipShowTimes >= 2
 }

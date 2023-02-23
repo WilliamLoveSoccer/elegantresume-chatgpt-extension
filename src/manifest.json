@@ -11,7 +11,6 @@
     "128": "logo.png"
   },
   "host_permissions": ["https://*.openai.com/"],
-  "permissions": ["storage"],
   "background": {
     "service_worker": "background.js"
   },
@@ -20,7 +19,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://localhost:3001/app/*"],
+      "matches": ["https://builder.elegantresume.pro/app*"],
       "js": ["content-script.js"],
       "css": ["content-script.css"]
     }

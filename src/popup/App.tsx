@@ -1,5 +1,4 @@
 import { GlobeIcon } from '@primer/octicons-react'
-import { useCallback } from 'react'
 import useSWR from 'swr'
 import Browser from 'webextension-polyfill'
 import '../base.css'
@@ -13,19 +12,6 @@ function App() {
     () => Browser.runtime.sendMessage({ type: 'GET_ACCESS_TOKEN' }),
     { shouldRetryOnError: false },
   )
-  // const hideShortcutsTipQuery = useSWR('hideShortcutsTip', async () => {
-  //   const { hideShortcutsTip } = await Browser.storage.local.get('hideShortcutsTip')
-  //   return !!hideShortcutsTip
-  // })
-
-  const openOptionsPage = useCallback(() => {
-    Browser.runtime.sendMessage({ type: 'OPEN_OPTIONS_PAGE' })
-  }, [])
-
-  // const openShortcutsPage = useCallback(() => {
-  //   Browser.storage.local.set({ hideShortcutsTip: true })
-  //   Browser.tabs.create({ url: 'chrome://extensions/shortcuts' })
-  // }, [])
 
   return (
     <div className="flex flex-col h-full">
@@ -50,6 +36,16 @@ function App() {
               <p>
                 Now you can open your resume using Elegant Resume Builder and get feedback from
                 ChatGPT.
+              </p>
+              <p>
+                The extension is open source, and the code base can be found on{' '}
+                <a
+                  href="https://github.com/WilliamLoveSoccer/elegantresume-chatgpt-extension"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Github
+                </a>
               </p>
               <p>
                 If you have any questions, comments, or suggestions, please contact me via my{' '}
